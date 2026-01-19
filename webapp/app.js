@@ -36,6 +36,9 @@ const fixedFields = document.getElementById("fixedFields");
 const hourlyFields = document.getElementById("hourlyFields");
 const importHint = document.getElementById("importHint");
 const toast = document.getElementById("toast");
+const tabButtons = Array.from(document.querySelectorAll("[data-tab]"));
+const tabPanels = Array.from(document.querySelectorAll("[data-panel]"));
+const tabMediaQuery = window.matchMedia("(max-width: 900px)");
 
 const STORAGE_KEY = "shiftCalendarEntries";
 const THEME_KEY = "shiftCalendarTheme";
@@ -50,6 +53,7 @@ let selectedDateKey = null;
 let entries = loadEntries();
 let payMode = "fixed";
 let toastTimeout = null;
+let activeTab = "calendar";
 
 const statusLabels = {
   shift: "Смена",
@@ -95,6 +99,22 @@ function showToast(message) {
   toastTimeout = setTimeout(() => {
     toast.classList.remove("show");
   }, 2500);
+}
+
+function setActiveTab(tabName) {
+  activeTab = tabName;
+  tabButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.tab === tabName);
+  });
+  if (tabMediaQuery.matches) {
+    tabPanels.forEach((panel) => {
+      panel.classList.toggle("active", panel.dataset.panel === tabName);
+    });
+  } else {
+    tabPanels.forEach((panel) => {
+      panel.classList.add("active");
+    });
+  }
 }
 
 function formatDateKey(date) {
@@ -661,6 +681,12 @@ toggleButtons.forEach((btn) => {
   });
 });
 
+tabButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    setActiveTab(button.dataset.tab);
+  });
+});
+
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && dayModal.classList.contains("active")) {
     closeModal();
@@ -672,4 +698,8 @@ window.addEventListener("resize", updateViewportHeight);
 initTheme();
 initTelegram();
 updateViewportHeight();
+setActiveTab(activeTab);
+tabMediaQuery.addEventListener("change", () => {
+  setActiveTab(activeTab);
+});
 renderCalendar();
