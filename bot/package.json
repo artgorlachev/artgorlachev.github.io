@@ -1,0 +1,12 @@
+{
+  "name": "shift-calendar-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot for Shift Calendar Mini App",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "grammy": "^1.21.1"
+  }
+}
