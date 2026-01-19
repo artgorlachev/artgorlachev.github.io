@@ -76,6 +76,21 @@ body {
   gap: 8px;
 }
 
+.tab-switcher {
+  display: none;
+  margin-top: 10px;
+  background: var(--card);
+  border-radius: 14px;
+  padding: 6px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  gap: 6px;
+}
+
+.tab-switcher .tab-btn {
+  flex: 1;
+}
+
 button,
 select,
 input,
@@ -485,6 +500,10 @@ button.danger-outline {
   }
 
   .bottom-nav {
+    display: flex;
+  }
+
+  .tab-switcher {
     display: flex;
   }
 }
