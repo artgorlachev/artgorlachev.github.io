@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <title>Shift Calendar — Учёт смен и заработка</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="title-block">
+      <h1>Shift Calendar</h1>
+      <p>Учёт смен и заработка</p>
+    </div>
+    <div class="header-actions">
+      <button id="backupBtn" class="secondary">Сделать резервную копию</button>
+      <button id="exportBtn" class="secondary">Экспорт JSON</button>
+      <label class="file-upload secondary">
+        Импорт JSON
+        <input type="file" id="importInput" accept="application/json" />
+      </label>
+      <button id="clearBtn" class="secondary danger-outline">Очистить данные</button>
+      <button id="themeToggle" class="secondary">Тёмная тема</button>
+      <button id="closeBtn" class="secondary hidden">Закрыть</button>
+    </div>
+    <p id="importHint" class="hint hidden">
+      Импорт работает через файл. Если WebView Telegram не даёт выбрать файл,
+      откройте приложение в браузере.
+    </p>
+  </header>
+
+  <main class="layout">
+    <section class="calendar-section">
+      <div class="calendar-header" id="calendarHeader">
+        <button id="prevMonth" aria-label="Предыдущий месяц">←</button>
+        <div class="month-title" id="monthTitle"></div>
+        <button id="nextMonth" aria-label="Следующий месяц">→</button>
+        <button id="todayBtn" class="secondary">Сегодня</button>
+      </div>
+      <div class="weekday-row">
+        <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+      </div>
+      <div id="calendarGrid" class="calendar-grid"></div>
+    </section>
+
+    <aside class="sidebar">
+      <section class="stats-card">
+        <h2>Статистика за месяц</h2>
+        <div class="stats-grid">
+          <div>
+            <span class="label">Заработано</span>
+            <strong id="statsEarnings">0 ₽</strong>
+          </div>
+          <div>
+            <span class="label">Кол-во смен</span>
+            <strong id="statsShifts">0</strong>
+          </div>
+          <div>
+            <span class="label">Отработано часов</span>
+            <strong id="statsHours">0 ч</strong>
+          </div>
+          <div>
+            <span class="label">Средний заработок</span>
+            <strong id="statsAverage">0 ₽</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="list-card">
+        <div class="list-header">
+          <h2>Список смен</h2>
+          <select id="statusFilter">
+            <option value="all">Все статусы</option>
+            <option value="shift">Смена</option>
+            <option value="off">Выходной</option>
+            <option value="vacation">Отпуск</option>
+            <option value="sick">Больничный</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="list-table" id="shiftList"></div>
+      </section>
+    </aside>
+  </main>
+
+  <div class="modal" id="dayModal" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Редактировать день</h3>
+        <button class="icon-btn" id="closeModal" aria-label="Закрыть">✕</button>
+      </div>
+      <div class="modal-body">
+        <label>
+          Статус дня
+          <select id="dayStatus">
+            <option value="shift">Смена</option>
+            <option value="off">Выходной</option>
+            <option value="vacation">Отпуск</option>
+            <option value="sick">Больничный</option>
+            <option value="other">Другое</option>
+          </select>
+        </label>
+
+        <div id="shiftFields" class="shift-fields">
+          <div class="row">
+            <label>
+              Начало (HH:MM)
+              <input type="time" id="startTime" />
+            </label>
+            <label>
+              Окончание (HH:MM)
+              <input type="time" id="endTime" />
+            </label>
+          </div>
+          <label>
+            Перерыв, минуты
+            <input type="number" id="breakMinutes" min="0" step="5" value="0" />
+          </label>
+
+          <div class="toggle-group">
+            <span>Способ расчёта заработка</span>
+            <div class="toggle-buttons">
+              <button type="button" class="toggle-btn active" data-mode="fixed">Фиксированная сумма</button>
+              <button type="button" class="toggle-btn" data-mode="hourly">Почасовой</button>
+            </div>
+          </div>
+
+          <div id="fixedFields">
+            <label>
+              Сумма за смену
+              <input type="number" id="fixedAmount" min="0" step="1" placeholder="0" />
+            </label>
+          </div>
+
+          <div id="hourlyFields" class="hidden">
+            <label>
+              Почасовая ставка
+              <input type="number" id="hourlyRate" min="0" step="1" placeholder="0" />
+            </label>
+          </div>
+
+          <label>
+            Доплата / премия
+            <input type="number" id="bonusAmount" min="0" step="1" placeholder="0" />
+          </label>
+          <label>
+            Комментарий / заметка
+            <textarea id="dayNote" rows="3" placeholder="Например: ночная смена"></textarea>
+          </label>
+          <div class="total-line">
+            Итого за смену: <strong id="shiftTotal">0 ₽</strong>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="deleteEntry" class="danger">Удалить запись</button>
+        <div class="modal-actions">
+          <button id="cancelBtn" class="secondary">Отмена</button>
+          <button id="saveBtn">Сохранить</button>
+        </div>
+      </div>
+      <p id="validationMessage" class="validation-message"></p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
