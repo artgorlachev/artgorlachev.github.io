@@ -67,6 +67,32 @@ body {
   color: var(--muted);
 }
 
+.actions-panel {
+  width: 100%;
+}
+
+.actions-panel summary {
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text);
+  padding: 10px 0;
+  list-style: none;
+}
+
+.actions-panel summary::-webkit-details-marker {
+  display: none;
+}
+
+.actions-panel summary::after {
+  content: "▾";
+  float: right;
+  color: var(--muted);
+}
+
+.actions-panel[open] summary::after {
+  content: "▴";
+}
+
 .header-actions {
   display: flex;
   gap: 10px;
@@ -453,6 +479,27 @@ button.danger-outline {
 }
 
 @media (max-width: 720px) {
+  .app-header {
+    padding: calc(12px + var(--safe-top)) calc(12px + var(--safe-right)) 12px
+      calc(12px + var(--safe-left));
+    gap: 8px;
+  }
+
+  .title-block h1 {
+    font-size: 20px;
+  }
+
+  .title-block p {
+    font-size: 13px;
+  }
+
+  .actions-panel {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px 12px;
+    background: var(--card);
+  }
+
   .calendar-header {
     position: sticky;
     top: 0;
@@ -489,7 +536,8 @@ button.danger-outline {
 
 @media (max-width: 480px) {
   .header-actions {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
   }
 
@@ -507,5 +555,25 @@ button.danger-outline {
 
   .weekday-row span {
     font-size: 11px;
+  }
+
+  .month-title {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 360px) {
+  .header-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 721px) {
+  .actions-panel {
+    display: contents;
+  }
+
+  .actions-panel summary {
+    display: none;
   }
 }
