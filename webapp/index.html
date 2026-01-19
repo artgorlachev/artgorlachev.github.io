@@ -16,17 +16,20 @@
       <h1>Shift Calendar</h1>
       <p>Учёт смен и заработка</p>
     </div>
-    <div class="header-actions">
-      <button id="backupBtn" class="secondary">Сделать резервную копию</button>
-      <button id="exportBtn" class="secondary">Экспорт JSON</button>
-      <label class="file-upload secondary">
-        Импорт JSON
-        <input type="file" id="importInput" accept="application/json" />
-      </label>
-      <button id="clearBtn" class="secondary danger-outline">Очистить данные</button>
-      <button id="themeToggle" class="secondary">Тёмная тема</button>
-      <button id="closeBtn" class="secondary hidden">Закрыть</button>
-    </div>
+    <details class="actions-panel">
+      <summary>Действия и настройки</summary>
+      <div class="header-actions">
+        <button id="backupBtn" class="secondary">Сделать резервную копию</button>
+        <button id="exportBtn" class="secondary">Экспорт JSON</button>
+        <label class="file-upload secondary">
+          Импорт JSON
+          <input type="file" id="importInput" accept="application/json" />
+        </label>
+        <button id="clearBtn" class="secondary danger-outline">Очистить данные</button>
+        <button id="themeToggle" class="secondary">Тёмная тема</button>
+        <button id="closeBtn" class="secondary hidden">Закрыть</button>
+      </div>
+    </details>
     <p id="importHint" class="hint hidden">
       Импорт работает через файл. Если WebView Telegram не даёт выбрать файл,
       откройте приложение в браузере.
